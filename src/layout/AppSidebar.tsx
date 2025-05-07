@@ -12,7 +12,7 @@ import {
   ChatIcon,
   ChevronDownIcon,
   DocsIcon,
-  GridIcon,
+ 
   HorizontaLDots,
   ListIcon,
   MailIcon,
