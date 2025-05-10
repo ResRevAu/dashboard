@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useCallback, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Chair, Restaurant } from "../icons";
-import {Food} from "../icons";
+import { Food } from "../icons";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
@@ -30,6 +30,8 @@ import SidebarWidget from "./SidebarWidget";
 import { XMarkIcon as HeroXMarkIcon } from "@heroicons/react/24/solid";
 import { XCircleIcon } from "@heroicons/react/24/solid";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import redX from "../icons/red-x.png";
+import exclamation from "../icons/exclamation.png";
 
 type NavItem = {
   name: string;
@@ -470,7 +472,7 @@ const AppSidebar: React.FC = () => {
                             {nav.name === "Venue Information" && (
                               subItem.name === "Your Amenities" ? (
                                 <Image 
-                                  src={require("../icons/red-x.png")} 
+                                  src={redX} 
                                   alt="Red X" 
                                   width={22} 
                                   height={22} 
@@ -479,7 +481,7 @@ const AppSidebar: React.FC = () => {
                                 />
                               ) : subItem.name === "Hours of Operation" ? (
                                 <Image 
-                                  src={require("../icons/exclamation.png")} 
+                                  src={exclamation} 
                                   alt="Exclamation" 
                                   width={22} 
                                   height={22} 
