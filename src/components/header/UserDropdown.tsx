@@ -30,7 +30,7 @@ export default function UserDropdown() {
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Restaurant Name
+        <span className="block mr-1 font-medium text-theme-sm">Richie’s
         </span>
 
         <svg
@@ -60,10 +60,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Restaurant Name
+            Richie’s
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            finedining@com.au
+            richie@richies.com.au
           </span>
         </div>
 

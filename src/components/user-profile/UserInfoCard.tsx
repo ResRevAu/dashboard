@@ -27,7 +27,7 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Restaurant Name
+                Richie’s
               </p>
             </div>
 
@@ -45,7 +45,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                finedining@com.au
+                richie@richies.com.au
               </p>
             </div>
 
@@ -148,7 +148,7 @@ export default function UserInfoCard() {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
                     <Label>First Name</Label>
-                    <Input type="text" defaultValue="Restaurant Name
+                    <Input type="text" defaultValue="Richie’s
 " />
                   </div>
 
@@ -159,7 +159,7 @@ export default function UserInfoCard() {
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Email Address</Label>
-                    <Input type="text" defaultValue="finedining@com.au" />
+                    <Input type="text" defaultValue="richie@richies.com.au" />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">

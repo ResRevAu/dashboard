@@ -7,10 +7,12 @@ import Input from "../input/InputField";
 import Select from "../Select";
 import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
-import { PaperPlaneIcon } from "../../../icons";
+import { PaperPlaneIcon, UserIcon, EnvelopeIcon, ArrowRightIcon } from "../../../icons";
+import Image from 'next/image';
 
 export default function ExampleFormOne() {
   const [message, setMessage] = useState<string>("");
+  const [venueName, setVenueName] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:");
@@ -29,45 +31,130 @@ export default function ExampleFormOne() {
     console.log("Message:", value);
   };
   return (
-    <ComponentCard title="Example Form">
+    <ComponentCard title="Register Venue Name" className="w-full">
       <Form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <div className="col-span-2 sm:col-span-1">
-            <Label htmlFor="firstName">First Name</Label>
-            <Input type="text" placeholder="Enter first name" id="firstName" />
+        <div className="grid grid-cols-1 gap-6 w-full">
+          <div className="mb-4">
+            <Label htmlFor="venue-name">Venue Name :</Label>
+            <div className="relative w-full">
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#ccc',
+                  fontSize: 16,
+                }}
+              >
+                <Image
+                  src="/images/icons/restaurant.svg"
+                  alt="Restaurant Icon"
+                  width={20}
+                  height={20}
+                  className="opacity-50 grayscale"
+                />
+              </span>
+              <Input
+                type="text"
+                placeholder="Enter Venue Name"
+                id="venue-name"
+                className={`w-full pl-10 ${venueName ? 'border-green-500 focus:border-green-600 ring-green-200 focus:ring-green-300' : ''}`}
+                value={venueName}
+                onChange={e => setVenueName(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="col-span-2 sm:col-span-1">
-            <Label htmlFor="lastName">Last Name</Label>
-            <Input type="text" placeholder="Enter last name" id="lastName" />
+          <div className="mb-4">
+            <Label htmlFor="venue-phone">Venue Phone:</Label>
+            <div className="relative w-full">
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#ccc',
+                  fontSize: 16,
+                }}
+              >
+                <Image
+                  src="/images/icons/phone.svg"
+                  alt="Phone Icon"
+                  width={20}
+                  height={20}
+                  className="opacity-50 grayscale"
+                />
+              </span>
+              <Input
+                type="text"
+                placeholder="+61 (0438 111 222)"
+                id="venue-phone"
+                className="w-full pl-10"
+              />
+            </div>
           </div>
-          <div className="col-span-2">
-            <Label htmlFor="email">Email</Label>
-            <Input type="text" placeholder="Enter email address" id="email" />
+          <div className="mb-4">
+            <Label htmlFor="website">Website:</Label>
+            <div className="relative w-full">
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#ccc',
+                  fontSize: 16,
+                }}
+              >
+                <Image
+                  src="/images/icons/website.svg"
+                  alt="Website Icon"
+                  width={20}
+                  height={20}
+                  className="opacity-50 grayscale"
+                />
+              </span>
+              <Input
+                type="text"
+                placeholder="Enter Website Address"
+                id="website"
+                className="w-full pl-10"
+              />
+            </div>
           </div>
-          <div className="col-span-2">
-            <Label htmlFor="subject">Subject</Label>
-            <Select
-              options={options}
-              placeholder="Select an option"
-              onChange={handleSelectChange}
-              defaultValue=""
-              className="bg-gray-50 dark:bg-gray-800"
-            />
+          <div className="mb-4">
+            <Label htmlFor="email">Email:</Label>
+            <div className="relative w-full">
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 12,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#ccc',
+                  fontSize: 16,
+                }}
+              >
+                <Image
+                  src="/images/icons/email.svg"
+                  alt="Email Icon"
+                  width={20}
+                  height={20}
+                  className="opacity-80 grayscale"
+                />
+              </span>
+              <Input
+                type="text"
+                placeholder="Enter Venue Email"
+                id="email"
+                className="w-full pl-10"
+              />
+            </div>
           </div>
-          <div className="col-span-2">
-            <Label htmlFor="email">Messages</Label>
-            <TextArea
-              placeholder="Type your message here..."
-              rows={6}
-              value={message}
-              onChange={handleTextareaChange}
-              className=" bg-gray-50 dark:bg-gray-800"
-            />
-          </div>
-          <div className="col-span-2">
-            <Button size="sm" className="w-full">
-              Send Message
-              <PaperPlaneIcon />
+          <div className="flex justify-end">
+            <Button size="sm">
+              Save & Next<ArrowRightIcon />
             </Button>
           </div>
         </div>
