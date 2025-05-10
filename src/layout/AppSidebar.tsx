@@ -1,10 +1,7 @@
 "use client";
-import Alert from "../components/ui/alert/Alert";
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Chair, Restaurant } from "../icons";
-import { Food } from "../icons";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
@@ -24,12 +21,8 @@ import {
   TaskIcon,
   UserCircleIcon,
   CheckCircleIcon,
-  AlertIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
-import { XMarkIcon as HeroXMarkIcon } from "@heroicons/react/24/solid";
-import { XCircleIcon } from "@heroicons/react/24/solid";
-import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import redX from "../icons/red-x.png";
 import exclamation from "../icons/exclamation.png";
 
@@ -57,7 +50,7 @@ const menuLayoutItems: NavItem[] = [
 
 const menuItemsNavigation: NavItem[] = [
   {
-    icon: <Image src={Restaurant} alt="Add Menu Items" width={20} height={20} />,
+    icon: <Image src="/images/icons/restaurant.png" alt="Add Menu Items" width={20} height={20} />,
     name: "Add Menu Items",
     subItems: [
       { name: "Add menu item", path: "/add-menu-item-details" },

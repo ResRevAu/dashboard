@@ -4,31 +4,15 @@ import ComponentCard from "../../common/ComponentCard";
 import Form from "../Form";
 import Label from "../Label";
 import Input from "../input/InputField";
-import Select from "../Select";
-import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
-import { PaperPlaneIcon, UserIcon, EnvelopeIcon, ArrowRightIcon } from "../../../icons";
+import { ArrowRightIcon } from "../../../icons";
 import Image from 'next/image';
 
 export default function ExampleFormOne() {
-  const [message, setMessage] = useState<string>("");
   const [venueName, setVenueName] = useState("");
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:");
-  };
-  const options = [
-    { value: "marketing", label: "Option 1" },
-    { value: "template", label: "Option 2" },
-    { value: "development", label: "Option 3" },
-  ];
-  const handleSelectChange = (value: string) => {
-    console.log("Selected value:", value);
-  };
-
-  const handleTextareaChange = (value: string) => {
-    setMessage(value);
-    console.log("Message:", value);
   };
   return (
     <ComponentCard title="Register Venue Name" className="w-full">
