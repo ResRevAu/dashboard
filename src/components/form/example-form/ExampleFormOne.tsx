@@ -88,7 +88,6 @@ export default function ExampleFormOne() {
                 placeholder="0438 111 222"
                 id="venue-phone"
                 onChange={setVenuePhone}
-                selectPosition="start"
                 className={
                   venuePhone.replace(/\D/g, "").length > countries[0].code.replace(/\D/g, "").length
                     ? (isValidVenuePhone
