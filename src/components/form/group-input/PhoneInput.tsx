@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from "react";
+import Image from 'next/image';
 
 interface CountryCode {
   code: string;
   label: string;
+  // short: string; // Add short code for display (e.g., AU, US, CN)
 }
 
 interface PhoneInputProps {
@@ -12,16 +14,18 @@ interface PhoneInputProps {
   id?: string;
   onChange?: (phoneNumber: string) => void;
   selectPosition?: "start" | "end"; // New prop for dropdown position
+  className?: string;
 }
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
   countries,
   placeholder = "+1 (555) 000-0000",
   onChange,
-  selectPosition = "start", // Default position is 'start'
+  selectPosition = "start",
+  className = "",
 }) => {
-  const [selectedCountry, setSelectedCountry] = useState<string>("US");
-  const [phoneNumber, setPhoneNumber] = useState<string>("+1");
+  const [selectedCountry, setSelectedCountry] = useState<string>(countries[0]?.code || "");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
   const countryCodes: Record<string, string> = countries.reduce(
     (acc, { code, label }) => ({ ...acc, [code]: label }),
@@ -31,110 +35,85 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCountry = e.target.value;
     setSelectedCountry(newCountry);
-    setPhoneNumber(countryCodes[newCountry]);
     if (onChange) {
-      onChange(countryCodes[newCountry]);
+      onChange(newCountry + phoneNumber);
     }
   };
 
+  // Helper: format phone number with a space every 4 digits (e.g., 0438 111 222)
+  function formatPhoneNumber(value: string) {
+    // Remove all non-digit characters
+    const digits = value.replace(/\D/g, "");
+    // Group as 4-3-3 (for AU mobile), fallback to 4-4-4 for others
+    if (digits.length <= 4) return digits;
+    if (digits.length <= 7) return digits.slice(0, 4) + ' ' + digits.slice(4);
+    return digits.slice(0, 4) + ' ' + digits.slice(4, 7) + ' ' + digits.slice(7, 10);
+  }
+
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPhoneNumber = e.target.value;
-    setPhoneNumber(newPhoneNumber);
+    let raw = e.target.value;
+    // Only allow digits and spaces
+    raw = raw.replace(/[^\d ]/g, "");
+    const formatted = formatPhoneNumber(raw);
+    setPhoneNumber(formatted);
     if (onChange) {
-      onChange(newPhoneNumber);
+      onChange(selectedCountry + formatted.replace(/ /g, "")); // pass E.164-like
     }
+  };
+
+  const handlePhoneNumberBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Format on blur as well
+    setPhoneNumber(formatPhoneNumber(e.target.value));
   };
 
   return (
-    <div className="relative flex">
-      {/* Dropdown position: Start */}
-      {selectPosition === "start" && (
-        <div className="absolute">
-          <select
-            value={selectedCountry}
-            onChange={handleCountryChange}
-            className="appearance-none bg-none rounded-l-lg border-0 border-r border-gray-200 bg-transparent py-3 pl-3.5 pr-8 leading-tight text-gray-700 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-gray-400"
-          >
-            {countries.map((country) => (
-              <option
-                key={country.code}
-                value={country.code}
-                className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-              >
-                {country.code}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 flex items-center text-gray-700 pointer-events-none bg-none right-3 dark:text-gray-400">
-            <svg
-              className="stroke-current"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+    <div className={`relative flex items-center h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus-within:outline-hidden focus-within:ring-3 focus-within:border-brand-300 focus-within:ring-brand-500/20 dark:border-gray-700 dark:text-white/90 dark:placeholder:text-white/30 dark:bg-gray-900 dark:focus-within:border-brand-800 ${className}`}>
+      {/* Phone Icon at the far left (use public/images/icons/phone.svg) */}
+      <span className="flex items-center pr-2 text-gray-500">
+        <Image
+          src="/images/icons/phone.svg"
+          alt="Phone Icon"
+          width={28}
+          height={28}
+          className="opacity-80"
+        />
+      </span>
+      {/* Country select dropdown with short code */}
+      <div className="relative flex items-center">
+        <select
+          value={selectedCountry}
+          onChange={handleCountryChange}
+          className="appearance-none bg-transparent border-0 border-r border-gray-200 py-0 pl-1 pr-1 h-full text-gray-700 text-sm focus:outline-none dark:border-gray-800 dark:text-gray-400 min-w-[60px] w-[80px] text-left"
+        >
+          {countries.map((country) => (
+            <option
+              key={country.code}
+              value={country.code}
+              className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
             >
-              <path
-                d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+              {country.label}
+            </option>
+          ))}
+        </select>
+        {/* Dropdown arrow for select */}
+        <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 flex items-center">
+          <svg width="16" height="16" fill="none" viewBox="0 0 20 20">
+            <path d="M5 8l5 5 5-5" stroke="#222E3A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
-      )}
-
-      {/* Input field */}
+      </div>
+      {/* Country code display */}
+      <span className="ml-0.5 text-gray-700 dark:text-gray-400 min-w-[36px] text-sm">{selectedCountry}</span>
+      {/* User input for phone number */}
       <input
         type="tel"
         value={phoneNumber}
         onChange={handlePhoneNumberChange}
+        onBlur={handlePhoneNumberBlur}
         placeholder={placeholder}
-        className={`dark:bg-dark-900 h-11 w-full ${
-          selectPosition === "start" ? "pl-[84px]" : "pr-[84px]"
-        } rounded-lg border border-gray-300 bg-transparent py-3 px-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800`}
+        className="border-0 bg-transparent py-0 px-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 w-full"
+        style={{ height: '100%' }}
       />
-
-      {/* Dropdown position: End */}
-      {selectPosition === "end" && (
-        <div className="absolute right-0">
-          <select
-            value={selectedCountry}
-            onChange={handleCountryChange}
-            className="appearance-none bg-none rounded-r-lg border-0 border-l border-gray-200 bg-transparent py-3 pl-3.5 pr-8 leading-tight text-gray-700 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-gray-400"
-          >
-            {countries.map((country) => (
-              <option
-                key={country.code}
-                value={country.code}
-                className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-              >
-                {country.code}
-              </option>
-            ))}
-          </select>
-          <div className="absolute inset-y-0 flex items-center text-gray-700 pointer-events-none right-3 dark:text-gray-400">
-            <svg
-              className="stroke-current"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

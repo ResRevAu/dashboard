@@ -7,12 +7,37 @@ import Input from "../input/InputField";
 import Button from "../../ui/button/Button";
 import { ArrowRightIcon } from "../../../icons";
 import Image from 'next/image';
+import PhoneInput from "../group-input/PhoneInput";
 
 export default function ExampleFormOne() {
   const [venueName, setVenueName] = useState("");
+  const [venuePhone, setVenuePhone] = useState<string>("+61");
+  const [phoneError, setPhoneError] = useState<string>("");
+  const [website, setWebsite] = useState("");
+  const [email, setEmail] = useState("");
+
+  // 国家/区号列表
+  const countries = [
+    { code: "+61", label: "Australia" },
+    { code: "+1", label: "USA" },
+    { code: "+86", label: "China" },
+    // 可按需添加更多
+  ];
+
+  // 校验函数
+  const isValidVenueName = venueName.trim().length > 0;
+  const isValidVenuePhone = venuePhone.replace(/\D/g, "").length >= 8;
+  const isValidWebsite = /^https?:\/\/.+\..+/.test(website.trim()) || website.trim().length === 0;
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || email.trim().length === 0;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:");
+    if (!venuePhone || venuePhone.length < 8) {
+      setPhoneError("Please enter a valid phone number");
+      return;
+    }
+    setPhoneError("");
+    console.log("Form submitted:", { venueName, venuePhone });
   };
   return (
     <ComponentCard title="Register Venue Name" className="w-full">
@@ -43,7 +68,13 @@ export default function ExampleFormOne() {
                 type="text"
                 placeholder="Enter Venue Name"
                 id="venue-name"
-                className={`w-full pl-10 ${venueName ? 'border-green-500 focus:border-green-600 ring-green-200 focus:ring-green-300' : ''}`}
+                className={`w-full pl-10 ${
+                  venueName.trim().length > 0
+                    ? (isValidVenueName
+                        ? 'border-green-500 focus:border-green-600 ring-green-200 focus:ring-green-300'
+                        : 'border-red-500 focus:border-red-600 ring-red-200 focus:ring-red-300')
+                    : ''
+                }`}
                 value={venueName}
                 onChange={e => setVenueName(e.target.value)}
               />
@@ -52,30 +83,21 @@ export default function ExampleFormOne() {
           <div className="mb-4">
             <Label htmlFor="venue-phone">Venue Phone:</Label>
             <div className="relative w-full">
-              <span
-                style={{
-                  position: 'absolute',
-                  left: 12,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: '#ccc',
-                  fontSize: 16,
-                }}
-              >
-                <Image
-                  src="/images/icons/phone.svg"
-                  alt="Phone Icon"
-                  width={20}
-                  height={20}
-                  className="opacity-50 grayscale"
-                />
-              </span>
-              <Input
-                type="text"
-                placeholder="+61 (0438 111 222)"
+              <PhoneInput
+                countries={countries}
+                placeholder="0438 111 222"
                 id="venue-phone"
-                className="w-full pl-10"
+                onChange={setVenuePhone}
+                selectPosition="start"
+                className={
+                  venuePhone.replace(/\D/g, "").length > countries[0].code.replace(/\D/g, "").length
+                    ? (isValidVenuePhone
+                        ? 'border-green-500 focus:border-green-600 ring-green-200 focus:ring-green-300'
+                        : 'border-red-500 focus:border-red-600 ring-red-200 focus:ring-red-300')
+                    : 'border-gray-300 focus:border-brand-300 ring-brand-500/20'
+                }
               />
+              {phoneError && <div className="text-red-500 text-xs mt-1">{phoneError}</div>}
             </div>
           </div>
           <div className="mb-4">
@@ -103,7 +125,15 @@ export default function ExampleFormOne() {
                 type="text"
                 placeholder="Enter Website Address"
                 id="website"
-                className="w-full pl-10"
+                className={`w-full pl-10 ${
+                  website.trim().length > 0
+                    ? (isValidWebsite
+                        ? 'border-green-500 focus:border-green-600 ring-green-200 focus:ring-green-300'
+                        : 'border-red-500 focus:border-red-600 ring-red-200 focus:ring-red-300')
+                    : ''
+                }`}
+                value={website}
+                onChange={e => setWebsite(e.target.value)}
               />
             </div>
           </div>
@@ -132,7 +162,15 @@ export default function ExampleFormOne() {
                 type="text"
                 placeholder="Enter Venue Email"
                 id="email"
-                className="w-full pl-10"
+                className={`w-full pl-10 ${
+                  email.trim().length > 0
+                    ? (isValidEmail
+                        ? 'border-green-500 focus:border-green-600 ring-green-200 focus:ring-green-300'
+                        : 'border-red-500 focus:border-red-600 ring-red-200 focus:ring-red-300')
+                    : ''
+                }`}
+                value={email}
+                onChange={e => setEmail(e.target.value)}
               />
             </div>
           </div>
