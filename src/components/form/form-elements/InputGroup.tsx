@@ -38,7 +38,7 @@ export default function InputGroup() {
         <div>
           <Label htmlFor="phone">Phone</Label>
           <PhoneInput
-            selectPosition="start"
+            
             countries={countries}
             placeholder="+1 (555) 000-0000"
             onChange={handlePhoneNumberChange}
@@ -47,7 +47,7 @@ export default function InputGroup() {
         <div>
           <Label>Website</Label>
           <PhoneInput
-            selectPosition="end"
+          
             countries={countries}
             placeholder="+1 (555) 000-0000"
             onChange={handlePhoneNumberChange}
