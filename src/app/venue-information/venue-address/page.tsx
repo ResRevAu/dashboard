@@ -26,15 +26,23 @@ export default function VenueAddressPage() {
   const [useCurrent, setUseCurrent] = useState(false);
   const [mapsLoaded, setMapsLoaded] = useState(false);
   const [fields, setFields] = useState({
+    unitNumber: "",
     streetNumber: "",
     streetName: "",
     suburb: "",
-    city: "",
     state: "",
     postcode: "",
     country: "Australia",
   });
   const router = useRouter();
+
+  // 处理首字母大写
+  const capitalizeFirstLetter = (str: string) => {
+    return str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
 
   // 动态加载 Google Maps 脚本
   useEffect(() => {
@@ -68,15 +76,26 @@ export default function VenueAddressPage() {
             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60`,
           );
           const data = await response.json();
-          console.log(data);
           if (data.status === "OK" && data.results.length > 0) {
-            setAddress(
-              data.results[0].formatted_address ||
-                data.results[0].vicinity ||
-                `Lat: ${latitude}, Lng: ${longitude}`,
-            );
-          } else {
-            setAddress(`Lat: ${latitude}, Lng: ${longitude}`);
+            const formattedAddress = data.results[0].formatted_address;
+            setAddress(formattedAddress);
+            
+            // 解析地址组件并填充表单
+            const components = data.results[0].address_components;
+            const get = (type: string) => {
+              const comp = components.find((c: any) => c.types.includes(type));
+              return comp ? comp.long_name : "";
+            };
+            
+            setFields({
+              unitNumber: get("subpremise") || "",
+              streetNumber: get("street_number"),
+              streetName: get("route"),
+              suburb: get("sublocality") || get("locality"),
+              state: get("administrative_area_level_1"),
+              postcode: get("postal_code"),
+              country: get("country") || "Australia",
+            });
           }
         },
         (error) => {
@@ -87,7 +106,10 @@ export default function VenueAddressPage() {
   };
 
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFields({ ...fields, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // 对输入值进行首字母大写处理
+    const capitalizedValue = capitalizeFirstLetter(value);
+    setFields({ ...fields, [name]: capitalizedValue });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -102,188 +124,197 @@ export default function VenueAddressPage() {
         <div className="w-full max-w-4xl">
           <ComponentCard title="Venue Address" className="w-full">
             <Form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 gap-6 w-full">
-                {!manual ? (
-                  <div className="mb-4">
-                    <Label htmlFor="address">Address:</Label>
-                    <div className="relative w-full">
-                      {mapsLoaded && (
-                        <PlacesAutocompleteComponent
-                          value={address}
-                          onChange={setAddress}
-                          onSelect={setAddress}
-                          searchOptions={{ componentRestrictions: { country: "au" } }}
-                        >
-                          {({ getInputProps, suggestions, getSuggestionItemProps, loading }: { getInputProps: any; suggestions: any[]; getSuggestionItemProps: any; loading: boolean }) => (
-                            <>
-                              <div className="relative w-full">
-                                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
-                                  <Image src="/images/icons/location1.png" alt="Location Icon" width={26} height={26} className="opacity-50 grayscale" />
-                                </span>
-                                <Input
-                                  {...getInputProps({
-                                    placeholder: "Search address or enter manually",
-                                    className: "pl-16 pr-12 bg-transparent",
-                                  })}
-                                />
-                                <button
-                                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500"
-                                  tabIndex={-1}
-                                  type="button"
-                                  aria-label="Use current location"
-                                  onClick={handleUseCurrentLocation}
-                                >
-                                  <FaLocationArrow />
-                                </button>
-                              </div>
-                              {(loading || suggestions.length > 0) && (
-                                <div className="bg-white border border-gray-200 rounded-lg mt-1 shadow z-10">
-                                  {loading && <div className="p-2 text-gray-400">Loading...</div>}
-                                  {suggestions.map((suggestion: any) => (
-                                    <div
-                                      {...getSuggestionItemProps(suggestion, {
-                                        className: "p-2 cursor-pointer hover:bg-gray-100" + (suggestion.active ? " bg-gray-100" : ""),
-                                      })}
-                                      key={suggestion.placeId}
-                                    >
-                                      {suggestion.description}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </PlacesAutocompleteComponent>
-                      )}
-                    </div>
-                    <div className="flex items-center mt-2">
-                      <input
-                        type="radio"
-                        checked={useCurrent}
-                        onChange={handleUseCurrentLocation}
-                        className="mr-2"
-                      />
-                      <span className="font-medium text-sm text-gray-700 dark:text-gray-400">Use Current Location</span>
-                    </div>
-                    <div className="text-gray-500 text-sm mt-2">
-                      If the address can't be found,{' '}
-                      <button
-                        className="text-brand-600 underline"
-                        onClick={() => setManual(true)}
-                        type="button"
+              <div className="flex flex-col md:flex-row gap-10 items-stretch">
+                {/* 左侧表单区 */}
+                <div className="w-full md:w-1/2 flex flex-col justify-between flex-1">
+                  <Label htmlFor="address">Address:</Label>
+                  <div className="relative w-full mb-2">
+                    {mapsLoaded && (
+                      <PlacesAutocompleteComponent
+                        value={address}
+                        onChange={setAddress}
+                        onSelect={(value: string) => {
+                          setAddress(value);
+                          // 使用 Google Geocoding API 解析地址
+                          fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(value)}&key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60`)
+                            .then(res => res.json())
+                            .then(data => {
+                              if (data.status === "OK" && data.results.length > 0) {
+                                const components = data.results[0].address_components;
+                                const get = (type: string) => {
+                                  const comp = components.find((c: any) => c.types.includes(type));
+                                  return comp ? comp.long_name : "";
+                                };
+                                setFields({
+                                  unitNumber: get("subpremise") || "",
+                                  streetNumber: get("street_number"),
+                                  streetName: get("route"),
+                                  suburb: get("sublocality") || get("locality"),
+                                  state: get("administrative_area_level_1"),
+                                  postcode: get("postal_code"),
+                                  country: get("country") || "Australia",
+                                });
+                              }
+                            });
+                        }}
+                        searchOptions={{ componentRestrictions: { country: "au" } }}
                       >
-                        enter it manually
-                      </button>
-                    </div>
+                        {({ getInputProps, suggestions, getSuggestionItemProps, loading }: { getInputProps: any; suggestions: any[]; getSuggestionItemProps: any; loading: boolean }) => (
+                          <>
+                            <div className="relative w-full">
+                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
+                                <Image src="/images/icons/location1.png" alt="Location Icon" width={26} height={26} className="opacity-50 grayscale" />
+                              </span>
+                              <Input
+                                {...getInputProps({
+                                  placeholder: "Search address or enter manually",
+                                  className: "pl-16 pr-12 bg-transparent",
+                                })}
+                              />
+                              <button
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500"
+                                tabIndex={-1}
+                                type="button"
+                                aria-label="Use current location"
+                                onClick={handleUseCurrentLocation}
+                              >
+                                <FaLocationArrow />
+                              </button>
+                            </div>
+                            {(loading || suggestions.length > 0) && (
+                              <div className="bg-white border border-gray-200 rounded-lg mt-1 shadow z-10">
+                                {loading && <div className="p-2 text-gray-400">Loading...</div>}
+                                {suggestions.map((suggestion: any) => (
+                                  <div
+                                    {...getSuggestionItemProps(suggestion, {
+                                      className: "p-2 cursor-pointer hover:bg-gray-100" + (suggestion.active ? " bg-gray-100" : ""),
+                                    })}
+                                    key={suggestion.placeId}
+                                  >
+                                    {suggestion.description}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </PlacesAutocompleteComponent>
+                    )}
                   </div>
-                ) : (
-                  <>
-                    <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="streetNumber">Street Number</Label>
-                        <Input
-                          name="streetNumber"
-                          placeholder="123"
-                          value={fields.streetNumber}
-                          onChange={handleFieldChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="streetName">Street Name</Label>
-                        <Input
-                          name="streetName"
-                          placeholder="Main St"
-                          value={fields.streetName}
-                          onChange={handleFieldChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="suburb">Suburb</Label>
-                        <Input
-                          name="suburb"
-                          placeholder="Robina"
-                          value={fields.suburb}
-                          onChange={handleFieldChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="city">City</Label>
-                        <Input
-                          name="city"
-                          placeholder="Gold Coast"
-                          value={fields.city}
-                          onChange={handleFieldChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="state">State</Label>
-                        <Input
-                          name="state"
-                          placeholder="QLD"
-                          value={fields.state}
-                          onChange={handleFieldChange}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="postcode">Postcode</Label>
-                        <Input
-                          name="postcode"
-                          placeholder="4227"
-                          value={fields.postcode}
-                          onChange={handleFieldChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-4">
-                      <Label htmlFor="country">Country</Label>
+                  <div className="flex items-center mb-2">
+                    <input
+                      type="radio"
+                      checked={useCurrent}
+                      onChange={handleUseCurrentLocation}
+                      className="mr-2"
+                    />
+                    <span className="font-medium text-sm text-gray-700 dark:text-gray-400">Use Current Location</span>
+                  </div>
+                  <div className="text-gray-500 text-sm mb-4">
+                    If the address can't be found,enter it manually
+                  </div>
+                  {/* 手动输入表单 */}
+                  <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="unitNumber">Unit Number</Label>
                       <Input
-                        name="country"
-                        placeholder="Australia"
-                        value={fields.country}
+                        name="unitNumber"
+                        placeholder="Unit 1"
+                        value={fields.unitNumber}
                         onChange={handleFieldChange}
                       />
                     </div>
-                    <div className="flex justify-between mt-4">
-                      <Button
-                        htmlType="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setManual(false)}
-                      >
-                        Back to search
-                      </Button>
-                      <Button htmlType="submit" size="sm">
-                        Save Address
-                      </Button>
+                    <div>
+                      <Label htmlFor="streetNumber">Street Number</Label>
+                      <Input
+                        name="streetNumber"
+                        placeholder="123"
+                        value={fields.streetNumber}
+                        onChange={handleFieldChange}
+                      />
                     </div>
-                  </>
-                )}
+                  </div>
+                  <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="streetName">Street Name</Label>
+                      <Input
+                        name="streetName"
+                        placeholder="Main St"
+                        value={fields.streetName}
+                        onChange={handleFieldChange}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="suburb">Suburb</Label>
+                      <Input
+                        name="suburb"
+                        placeholder="Robina"
+                        value={fields.suburb}
+                        onChange={handleFieldChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="state">State</Label>
+                      <Input
+                        name="state"
+                        placeholder="QLD"
+                        value={fields.state}
+                        onChange={handleFieldChange}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="postcode">Postcode</Label>
+                      <Input
+                        name="postcode"
+                        placeholder="4227"
+                        value={fields.postcode}
+                        onChange={handleFieldChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      name="country"
+                      placeholder="Australia"
+                      value={fields.country}
+                      onChange={handleFieldChange}
+                    />
+                  </div>
+                </div>
+                {/* 右侧地图区 */}
+                <div className="w-full md:w-1/2 flex flex-col flex-1">
+                  <div className="flex-1 overflow-hidden h-full min-h-[420px] mt-7">
+                    <iframe
+                      width="100%"
+                      height="97%"
+                      style={{ minHeight: '420px', border: 0 }}
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                      src={`https://www.google.com/maps?q=${encodeURIComponent(address || 'Australia')}&output=embed`}
+                    />
+                  </div>
+                </div>
               </div>
-              {manual ? (
-                <div className="flex justify-between mt-4">
-                
-                 
-                </div>
-              ) : (
-                <div className="flex justify-between mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      window.history.length > 1 ? window.history.back() : window.location.href = "/venue-information/register-venue-name";
-                    }}
-                  >
-                    Previous Page
-                  </Button>
-                  <Button size="sm">
-                    Save & Next<ArrowRightIcon />
-                  </Button>
-                </div>
-              )}
+              {/* 按钮区 */}
+              <div className="flex justify-between mt-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className=""
+                  onClick={() => {
+                    router.push('/venue-information/register-venue-name');
+                  }}
+                >
+                  Previous Page
+                </Button>
+                <Button size="sm">
+                  Save & Next<ArrowRightIcon />
+                </Button>
+              </div>
             </Form>
           </ComponentCard>
         </div>
