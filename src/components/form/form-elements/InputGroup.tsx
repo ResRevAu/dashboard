@@ -19,49 +19,51 @@ export default function InputGroup() {
     console.log("Updated phone number:", phoneNumber);
   };
   return (
-    <ComponentCard title="Input Group">
-      <div className="space-y-6">
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Input
-              id="email"
-              placeholder="info@gmail.com"
-              type="text"
-              className="pl-[62px]"
+    <div className="w-full max-w-6xl mx-auto">
+      <ComponentCard title="Input Group" className="w-full">
+        <div className="space-y-6">
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <Input
+                id="email"
+                placeholder="info@gmail.com"
+                type="text"
+                className="pl-[62px]"
+              />
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 border-r border-gray-200 px-3.5 py-3 text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                <EnvelopeIcon />
+              </span>
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="phone">Phone</Label>
+            <PhoneInput
+              
+              countries={countries}
+              placeholder="+1 (555) 000-0000"
+              onChange={handlePhoneNumberChange}
             />
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 border-r border-gray-200 px-3.5 py-3 text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              <EnvelopeIcon />
-            </span>
+          </div>{" "}
+          <div>
+            <Label>Website</Label>
+            <PhoneInput
+            
+              countries={countries}
+              placeholder="+1 (555) 000-0000"
+              onChange={handlePhoneNumberChange}
+            />
+          </div>
+          <div>
+            <Label>URL</Label>
+            <UrlPrefixInput />
+          </div>
+          <div>
+            <Label>Website</Label>
+            <CopyInput />
           </div>
         </div>
-        <div>
-          <Label htmlFor="phone">Phone</Label>
-          <PhoneInput
-            
-            countries={countries}
-            placeholder="+1 (555) 000-0000"
-            onChange={handlePhoneNumberChange}
-          />
-        </div>{" "}
-        <div>
-          <Label>Website</Label>
-          <PhoneInput
-          
-            countries={countries}
-            placeholder="+1 (555) 000-0000"
-            onChange={handlePhoneNumberChange}
-          />
-        </div>
-        <div>
-          <Label>URL</Label>
-          <UrlPrefixInput />
-        </div>
-        <div>
-          <Label>Website</Label>
-          <CopyInput />
-        </div>
-      </div>
-    </ComponentCard>
+      </ComponentCard>
+    </div>
   );
 }

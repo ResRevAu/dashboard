@@ -81,7 +81,7 @@ const navItems: NavItem[] = [
     name: "Venue Information",
     subItems: [
       { name: "Register Venue Name", path: "/venue-information/register-venue-name" },
-      { name: "Venue Address", path: "/venue-address" },
+      { name: "Venue Address", path: "/venue-information/venue-address" },
       { name: "Venue Type", path: "/venue-type" },
       { name: "Cuisine Style", path: "/cuisine-style" },
       { name: "Venue Photographs", path: "/venue-photographs" },

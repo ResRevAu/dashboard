@@ -14,7 +14,8 @@ export default function FormLayout() {
     <div>
       <PageBreadcrumb pageTitle="Register Venue Name" />
       <div className="flex justify-center items-start min-h-[60vh] mt-8">
-        <div className="w-full max-w-lg">
+        {/* <div className="w-full max-w-lg"> */}
+        <div className="w-full max-w-4xl">
           <ExampleFormOne />
         </div>
       </div>

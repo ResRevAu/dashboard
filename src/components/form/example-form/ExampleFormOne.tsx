@@ -8,6 +8,7 @@ import Button from "../../ui/button/Button";
 import { ArrowRightIcon } from "../../../icons";
 import Image from 'next/image';
 import PhoneInput from "../group-input/PhoneInput";
+import { useRouter } from "next/navigation";
 
 export default function ExampleFormOne() {
   const [venueName, setVenueName] = useState("");
@@ -15,6 +16,7 @@ export default function ExampleFormOne() {
   const [phoneError, setPhoneError] = useState<string>("");
   const [website, setWebsite] = useState("");
   const [email, setEmail] = useState("");
+  const router = useRouter();
 
   // 国家/区号列表
   const countries = [
@@ -32,12 +34,12 @@ export default function ExampleFormOne() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!venuePhone || venuePhone.length < 8) {
+    if (!venuePhone || venuePhone.length <8) {
       setPhoneError("Please enter a valid phone number");
       return;
     }
     setPhoneError("");
-    console.log("Form submitted:", { venueName, venuePhone });
+    router.push("/venue-information/venue-address");
   };
   return (
     <ComponentCard title="Register Venue Name" className="w-full">
@@ -87,7 +89,10 @@ export default function ExampleFormOne() {
                 countries={countries}
                 placeholder="0438 111 222"
                 id="venue-phone"
-                onChange={setVenuePhone}
+                onChange={value => {
+                  setVenuePhone(value);
+                  if (phoneError) setPhoneError("");
+                }}
                 className={
                   venuePhone.replace(/\D/g, "").length > countries[0].code.replace(/\D/g, "").length
                     ? (isValidVenuePhone
@@ -174,7 +179,7 @@ export default function ExampleFormOne() {
             </div>
           </div>
           <div className="flex justify-end">
-            <Button size="sm">
+            <Button size="sm" htmlType="submit">
               Save & Next<ArrowRightIcon />
             </Button>
           </div>
