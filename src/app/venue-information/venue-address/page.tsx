@@ -136,19 +136,21 @@ export default function VenueAddressPage() {
                                   <FaLocationArrow />
                                 </button>
                               </div>
-                              <div className="bg-white border border-gray-200 rounded-lg mt-1 shadow z-10">
-                                {loading && <div className="p-2 text-gray-400">Loading...</div>}
-                                {suggestions.map((suggestion: any) => (
-                                  <div
-                                    {...getSuggestionItemProps(suggestion, {
-                                      className: "p-2 cursor-pointer hover:bg-gray-100" + (suggestion.active ? " bg-gray-100" : ""),
-                                    })}
-                                    key={suggestion.placeId}
-                                  >
-                                    {suggestion.description}
-                                  </div>
-                                ))}
-                              </div>
+                              {(loading || suggestions.length > 0) && (
+                                <div className="bg-white border border-gray-200 rounded-lg mt-1 shadow z-10">
+                                  {loading && <div className="p-2 text-gray-400">Loading...</div>}
+                                  {suggestions.map((suggestion: any) => (
+                                    <div
+                                      {...getSuggestionItemProps(suggestion, {
+                                        className: "p-2 cursor-pointer hover:bg-gray-100" + (suggestion.active ? " bg-gray-100" : ""),
+                                      })}
+                                      key={suggestion.placeId}
+                                    >
+                                      {suggestion.description}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </>
                           )}
                         </PlacesAutocompleteComponent>
@@ -176,44 +178,48 @@ export default function VenueAddressPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="mb-4">
-                      <Label htmlFor="streetNumber">Street Number</Label>
-                      <Input
-                        name="streetNumber"
-                        placeholder="123"
-                        value={fields.streetNumber}
-                        onChange={handleFieldChange}
-                      />
+                    <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="streetNumber">Street Number</Label>
+                        <Input
+                          name="streetNumber"
+                          placeholder="123"
+                          value={fields.streetNumber}
+                          onChange={handleFieldChange}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="streetName">Street Name</Label>
+                        <Input
+                          name="streetName"
+                          placeholder="Main St"
+                          value={fields.streetName}
+                          onChange={handleFieldChange}
+                        />
+                      </div>
                     </div>
-                    <div className="mb-4">
-                      <Label htmlFor="streetName">Street Name</Label>
-                      <Input
-                        name="streetName"
-                        placeholder="Main St"
-                        value={fields.streetName}
-                        onChange={handleFieldChange}
-                      />
+                    <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="suburb">Suburb</Label>
+                        <Input
+                          name="suburb"
+                          placeholder="Robina"
+                          value={fields.suburb}
+                          onChange={handleFieldChange}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="city">City</Label>
+                        <Input
+                          name="city"
+                          placeholder="Gold Coast"
+                          value={fields.city}
+                          onChange={handleFieldChange}
+                        />
+                      </div>
                     </div>
-                    <div className="mb-4">
-                      <Label htmlFor="suburb">Suburb</Label>
-                      <Input
-                        name="suburb"
-                        placeholder="Robina"
-                        value={fields.suburb}
-                        onChange={handleFieldChange}
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <Label htmlFor="city">City</Label>
-                      <Input
-                        name="city"
-                        placeholder="Gold Coast"
-                        value={fields.city}
-                        onChange={handleFieldChange}
-                      />
-                    </div>
-                    <div className="flex gap-4 mb-4">
-                      <div className="flex-1">
+                    <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
                         <Label htmlFor="state">State</Label>
                         <Input
                           name="state"
@@ -222,7 +228,7 @@ export default function VenueAddressPage() {
                           onChange={handleFieldChange}
                         />
                       </div>
-                      <div className="flex-1">
+                      <div>
                         <Label htmlFor="postcode">Postcode</Label>
                         <Input
                           name="postcode"
@@ -241,22 +247,26 @@ export default function VenueAddressPage() {
                         onChange={handleFieldChange}
                       />
                     </div>
+                    <div className="flex justify-between mt-4">
+                      <Button
+                        htmlType="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setManual(false)}
+                      >
+                        Back to search
+                      </Button>
+                      <Button htmlType="submit" size="sm">
+                        Save Address
+                      </Button>
+                    </div>
                   </>
                 )}
               </div>
               {manual ? (
                 <div className="flex justify-between mt-4">
-                  <Button
-                    htmlType="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setManual(false)}
-                  >
-                    Back to search
-                  </Button>
-                  <Button htmlType="submit" size="sm">
-                    Save Address
-                  </Button>
+                
+                 
                 </div>
               ) : (
                 <div className="flex justify-between mt-4">
