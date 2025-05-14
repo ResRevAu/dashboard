@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
+  transpilePackages: ['react-phone-input-2'],
 };
 
 export default nextConfig;

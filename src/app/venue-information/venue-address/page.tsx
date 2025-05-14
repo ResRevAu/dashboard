@@ -237,7 +237,7 @@ export default function VenueAddressPage() {
                               <Input
                                 {...getInputProps()}
                                 placeholder="Search address or enter manually"
-                                className="pl-16 pr-12 bg-transparent"
+                                className="pl-12 pr-12 bg-transparent"
                               />
                               <button
                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500"
@@ -258,7 +258,7 @@ export default function VenueAddressPage() {
                                   setUseCurrent(false);
                                 }}
                               >
-                                <FaTimes size={22} />
+                                <FaTimes size={22} className="font-thin" />
                               </button>
                             </div>
                             {(loading || suggestions.length > 0) && (
