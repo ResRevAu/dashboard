@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { FaSearch, FaLocationArrow } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import ComponentCard from "@/components/common/ComponentCard";
 import Form from "@/components/form/Form";
 import Label from "@/components/form/Label";
@@ -12,7 +12,54 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { ArrowRightIcon, ArrowLeftIcon } from "@/icons";
 import { useRouter } from "next/navigation";
 
-const PlacesAutocompleteComponent = dynamic<any>(() => import("react-places-autocomplete"), { ssr: false });
+interface AddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+interface GeocodeResult {
+  formatted_address: string;
+  address_components: AddressComponent[];
+}
+
+interface GeocodeResponse {
+  status: string;
+  results: GeocodeResult[];
+}
+
+interface PlacesAutocompleteProps {
+  value: string;
+  onChange: (value: string) => void;
+  onSelect: (value: string) => void;
+  searchOptions?: {
+    componentRestrictions?: {
+      country: string;
+    };
+  };
+  children: (props: {
+    getInputProps: (options?: {
+      placeholder?: string;
+      className?: string;
+    }) => {
+      value: string;
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+      onBlur: () => void;
+      onFocus: () => void;
+      className?: string;
+      placeholder?: string;
+    };
+    suggestions: Array<{
+      description: string;
+      placeId: string;
+      active?: boolean;
+    }>;
+    getSuggestionItemProps: (suggestion: any) => any;
+    loading: boolean;
+  }) => React.ReactNode;
+}
+
+const PlacesAutocompleteComponent = dynamic<PlacesAutocompleteProps>(() => import("react-places-autocomplete"), { ssr: false });
 
 const countries = [
   { code: "+61", label: "Australia" },
@@ -21,7 +68,6 @@ const countries = [
 ];
 
 export default function VenueAddressPage() {
-  const [manual, setManual] = useState(false);
   const [address, setAddress] = useState("");
   const [useCurrent, setUseCurrent] = useState(false);
   const [mapsLoaded, setMapsLoaded] = useState(false);
@@ -87,34 +133,40 @@ export default function VenueAddressPage() {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          // 使用 Google Maps Geocoding API 获取详细地址
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60`,
-          );
-          const data = await response.json();
-          if (data.status === "OK" && data.results.length > 0) {
-            const formattedAddress = data.results[0].formatted_address;
-            setAddress(formattedAddress);
-            
-            // 解析地址组件并填充表单
-            const components = data.results[0].address_components;
-            const get = (type: string) => {
-              const comp = components.find((c: any) => c.types.includes(type));
-              return comp ? comp.long_name : "";
-            };
-            
-            setFields({
-              unitNumber: get("subpremise") || "",
-              streetNumber: get("street_number"),
-              streetName: get("route"),
-              suburb: get("sublocality") || get("locality"),
-              state: get("administrative_area_level_1"),
-              postcode: get("postal_code"),
-              country: get("country") || "Australia",
-            });
+          try {
+            // 使用 Google Maps Geocoding API 获取详细地址
+            const response = await fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60`,
+            );
+            const data: GeocodeResponse = await response.json();
+            if (data.status === "OK" && data.results.length > 0) {
+              const formattedAddress = data.results[0].formatted_address;
+              setAddress(formattedAddress);
+              
+              // 解析地址组件并填充表单
+              const components = data.results[0].address_components;
+              const get = (type: string) => {
+                const comp = components.find((c: AddressComponent) => c.types.includes(type));
+                return comp ? comp.long_name : "";
+              };
+              
+              setFields({
+                unitNumber: get("subpremise") || "",
+                streetNumber: get("street_number"),
+                streetName: get("route"),
+                suburb: get("sublocality") || get("locality"),
+                state: get("administrative_area_level_1"),
+                postcode: get("postal_code"),
+                country: get("country") || "Australia",
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching location data:", error);
+            alert("无法获取当前位置");
           }
         },
         (error) => {
+          console.error("Geolocation error:", error);
           alert("无法获取当前位置");
         },
       );
@@ -154,11 +206,11 @@ export default function VenueAddressPage() {
                           // 使用 Google Geocoding API 解析地址
                           fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(value)}&key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60`)
                             .then(res => res.json())
-                            .then(data => {
+                            .then((data: GeocodeResponse) => {
                               if (data.status === "OK" && data.results.length > 0) {
                                 const components = data.results[0].address_components;
                                 const get = (type: string) => {
-                                  const comp = components.find((c: any) => c.types.includes(type));
+                                  const comp = components.find((c: AddressComponent) => c.types.includes(type));
                                   return comp ? comp.long_name : "";
                                 };
                                 setFields({
@@ -175,37 +227,47 @@ export default function VenueAddressPage() {
                         }}
                         searchOptions={{ componentRestrictions: { country: "au" } }}
                       >
-                        {({ getInputProps, suggestions, getSuggestionItemProps, loading }: { getInputProps: any; suggestions: any[]; getSuggestionItemProps: any; loading: boolean }) => (
+                        {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
                           <>
                             <div className="relative w-full">
                               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">
                                 <Image src="/images/icons/location1.png" alt="Location Icon" width={26} height={26} className="opacity-50 grayscale" />
                               </span>
                               <Input
-                                {...getInputProps({
-                                  placeholder: "Search address or enter manually",
-                                  className: "pl-16 pr-12 bg-transparent",
-                                })}
+                                {...getInputProps()}
+                                placeholder="Search address or enter manually"
+                                className="pl-16 pr-12 bg-transparent"
                               />
                               <button
                                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500"
                                 tabIndex={-1}
                                 type="button"
-                                aria-label="Use current location"
-                                onClick={handleUseCurrentLocation}
+                                aria-label="Clear address"
+                                onClick={() => {
+                                  setAddress("");
+                                  setFields({
+                                    unitNumber: "",
+                                    streetNumber: "",
+                                    streetName: "",
+                                    suburb: "",
+                                    state: "",
+                                    postcode: "",
+                                    country: "Australia",
+                                  });
+                                  setUseCurrent(false);
+                                }}
                               >
-                                <FaLocationArrow />
+                                <FaTimes />
                               </button>
                             </div>
                             {(loading || suggestions.length > 0) && (
                               <div className="bg-white border border-gray-200 rounded-lg mt-1 shadow z-10">
                                 {loading && <div className="p-2 text-gray-400">Loading...</div>}
-                                {suggestions.map((suggestion: any) => (
+                                {suggestions.map((suggestion) => (
                                   <div
-                                    {...getSuggestionItemProps(suggestion, {
-                                      className: "p-2 cursor-pointer hover:bg-gray-100" + (suggestion.active ? " bg-gray-100" : ""),
-                                    })}
+                                    {...getSuggestionItemProps(suggestion)}
                                     key={suggestion.placeId}
+                                    className="p-2 cursor-pointer hover:bg-gray-100"
                                   >
                                     {suggestion.description}
                                   </div>
@@ -227,7 +289,7 @@ export default function VenueAddressPage() {
                     <span className="font-medium text-sm text-gray-700 dark:text-gray-400">Use Current Location</span>
                   </div>
                   <div className="text-gray-500 text-sm mb-4">
-                    If the address can't be found, enter it manually.
+                    If the address can&apos;t be found, enter it manually.
                   </div>
                   {/* 手动输入表单 */}
                   <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
