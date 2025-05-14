@@ -28,6 +28,12 @@ interface GeocodeResponse {
   results: GeocodeResult[];
 }
 
+interface Suggestion {
+  description: string;
+  placeId: string;
+  active?: boolean;
+}
+
 interface PlacesAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
@@ -49,12 +55,13 @@ interface PlacesAutocompleteProps {
       className?: string;
       placeholder?: string;
     };
-    suggestions: Array<{
-      description: string;
-      placeId: string;
-      active?: boolean;
-    }>;
-    getSuggestionItemProps: (suggestion: any) => any;
+    suggestions: Suggestion[];
+    getSuggestionItemProps: (suggestion: Suggestion) => {
+      className?: string;
+      onClick?: () => void;
+      onMouseEnter?: () => void;
+      onMouseLeave?: () => void;
+    };
     loading: boolean;
   }) => React.ReactNode;
 }
@@ -257,7 +264,7 @@ export default function VenueAddressPage() {
                                   setUseCurrent(false);
                                 }}
                               >
-                                <FaTimes />
+                                <FaTimes size={22} />
                               </button>
                             </div>
                             {(loading || suggestions.length > 0) && (
