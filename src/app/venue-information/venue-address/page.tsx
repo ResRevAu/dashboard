@@ -68,12 +68,6 @@ interface PlacesAutocompleteProps {
 
 const PlacesAutocompleteComponent = dynamic<PlacesAutocompleteProps>(() => import("react-places-autocomplete"), { ssr: false });
 
-const countries = [
-  { code: "+61", label: "Australia" },
-  { code: "+1", label: "USA" },
-  { code: "+86", label: "China" },
-];
-
 export default function VenueAddressPage() {
   const [address, setAddress] = useState("");
   const [useCurrent, setUseCurrent] = useState(false);

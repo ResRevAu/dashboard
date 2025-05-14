@@ -42,6 +42,27 @@ declare module 'react-places-autocomplete' {
   export default class PlacesAutocomplete extends Component<PlacesAutocompleteProps> {}
 }
 
-interface Window {
-    google: any;
+interface GoogleMaps {
+  maps: {
+    places: {
+      Autocomplete: new (input: HTMLInputElement, options?: { componentRestrictions?: { country: string } }) => {
+        addListener: (event: string, callback: () => void) => void;
+        getPlace: () => {
+          geometry?: {
+            location: {
+              lat: () => number;
+              lng: () => number;
+            };
+          };
+        };
+      };
+    };
+    Geocoder: new () => {
+      geocode: (request: { address?: string; location?: { lat: number; lng: number } }, callback: (results: any[], status: string) => void) => void;
+    };
   };
+}
+
+interface Window {
+  google: GoogleMaps;
+}
