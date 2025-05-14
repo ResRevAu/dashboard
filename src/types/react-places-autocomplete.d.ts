@@ -42,6 +42,27 @@ declare module 'react-places-autocomplete' {
   export default class PlacesAutocomplete extends Component<PlacesAutocompleteProps> {}
 }
 
+interface GeocoderResult {
+  address_components: Array<{
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }>;
+  formatted_address: string;
+  geometry: {
+    location: {
+      lat: () => number;
+      lng: () => number;
+    };
+    viewport?: {
+      getNorthEast: () => { lat: () => number; lng: () => number };
+      getSouthWest: () => { lat: () => number; lng: () => number };
+    };
+  };
+  place_id: string;
+  types: string[];
+}
+
 interface GoogleMaps {
   maps: {
     places: {
@@ -58,7 +79,10 @@ interface GoogleMaps {
       };
     };
     Geocoder: new () => {
-      geocode: (request: { address?: string; location?: { lat: number; lng: number } }, callback: (results: any[], status: string) => void) => void;
+      geocode: (
+        request: { address?: string; location?: { lat: number; lng: number } },
+        callback: (results: GeocoderResult[], status: string) => void
+      ) => void;
     };
   };
 }
