@@ -9,7 +9,7 @@ import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import Image from "next/image";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { ArrowRightIcon } from "@/icons";
+import { ArrowRightIcon, ArrowLeftIcon } from "@/icons";
 import { useRouter } from "next/navigation";
 
 const PlacesAutocompleteComponent = dynamic<any>(() => import("react-places-autocomplete"), { ssr: false });
@@ -66,6 +66,22 @@ export default function VenueAddressPage() {
 
   // 获取当前位置
   const handleUseCurrentLocation = () => {
+    if (useCurrent) {
+      // 如果已经使用了当前位置，再次点击时清空所有字段
+      setUseCurrent(false);
+      setAddress("");
+      setFields({
+        unitNumber: "",
+        streetNumber: "",
+        streetName: "",
+        suburb: "",
+        state: "",
+        postcode: "",
+        country: "Australia",
+      });
+      return;
+    }
+
     setUseCurrent(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -127,7 +143,7 @@ export default function VenueAddressPage() {
               <div className="flex flex-col md:flex-row gap-10 items-stretch">
                 {/* 左侧表单区 */}
                 <div className="w-full md:w-1/2 flex flex-col justify-between flex-1">
-                  <Label htmlFor="address">Address:</Label>
+                  <Label htmlFor="address">Venue Address:</Label>
                   <div className="relative w-full mb-2">
                     {mapsLoaded && (
                       <PlacesAutocompleteComponent
@@ -211,12 +227,12 @@ export default function VenueAddressPage() {
                     <span className="font-medium text-sm text-gray-700 dark:text-gray-400">Use Current Location</span>
                   </div>
                   <div className="text-gray-500 text-sm mb-4">
-                    If the address can't be found,enter it manually
+                    If the address can't be found, enter it manually.
                   </div>
                   {/* 手动输入表单 */}
                   <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="unitNumber">Unit Number</Label>
+                      <Label htmlFor="unitNumber">Unit Number (Optional)</Label>
                       <Input
                         name="unitNumber"
                         placeholder="Unit 1"
@@ -309,9 +325,14 @@ export default function VenueAddressPage() {
                     router.push('/venue-information/register-venue-name');
                   }}
                 >
-                  Previous Page
+                  <ArrowLeftIcon />Previous
                 </Button>
-                <Button size="sm">
+                <Button 
+                  size="sm"
+                  onClick={() => {
+                    router.push('/venue-information/venue-type');
+                  }}
+                >
                   Save & Next<ArrowRightIcon />
                 </Button>
               </div>

@@ -1,3 +1,3 @@
 export default function VenueTypePage() {
-  return <div>Venue type page.</div>;
+  return <div>This is the Venue type page.</div>;
 }

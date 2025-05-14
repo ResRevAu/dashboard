@@ -15,6 +15,7 @@ import GridIcon from "./grid.svg";
 import FileIcon from "./file.svg";
 import DownloadIcon from "./download.svg";
 import ArrowRightIcon from "./arrow-right.svg";
+import ArrowLeftIcon from "./arrow-left.svg";
 import GroupIcon from "./group.svg";
 import BoxIconLine from "./box-line.svg";
 import ShootingStarIcon from "./shooting-star.svg";
@@ -75,6 +76,7 @@ export {
   FolderIcon,
   ArrowDownIcon,
   ArrowRightIcon,
+  ArrowLeftIcon,
   GroupIcon,
   BoxIconLine,
   ShootingStarIcon,
