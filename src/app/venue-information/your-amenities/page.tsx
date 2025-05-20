@@ -1,3 +1,40 @@
+"use client";
+import React from "react";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import ComponentCard from "@/components/common/ComponentCard";
+import Form from "@/components/form/Form";
+import Button from "@/components/ui/button/Button";
+import { useRouter } from "next/navigation";
+
 export default function YourAmenitiesPage() {
-  return <div>Your amenities page.</div>;
+  const router = useRouter();
+
+  return (
+    <div>
+      <PageBreadcrumb pageTitle="Your Amenities" />
+      <div className="flex justify-center items-start min-h-[60vh] mt-8">
+        <div className="w-full max-w-4xl">
+          <ComponentCard title="Your Amenities" className="w-full">
+            <Form onSubmit={() => {}}>
+              {/* 这里可以放设施选择的内容，暂时留空 */}
+              <div className="flex justify-between mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/venue-information/hours-of-operation")}
+                >
+                  Previous
+                </Button>
+                <Button
+                  className="px-8"
+                  onClick={() => router.push("/venue-information/view-venue-profile")}
+                >
+                  Save & Continue
+                </Button>
+              </div>
+            </Form>
+          </ComponentCard>
+        </div>
+      </div>
+    </div>
+  );
 }

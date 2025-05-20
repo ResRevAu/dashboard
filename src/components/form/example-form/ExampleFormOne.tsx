@@ -18,7 +18,8 @@ export default function ExampleFormOne() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-  // 国家/区号列表
+  // Country/area code list
+  // Add more as needed
   const countries = [
     { code: "+61", label: "Australia" },
     { code: "+1", label: "USA" },
@@ -26,7 +27,7 @@ export default function ExampleFormOne() {
     // 可按需添加更多
   ];
 
-  // 校验函数
+  // Validation function
   const isValidVenueName = venueName.trim().length > 0;
   const isValidVenuePhone = venuePhone.replace(/\D/g, "").length >= 8;
   const isValidWebsite = /^https?:\/\/.+\..+/.test(website.trim()) || website.trim().length === 0;

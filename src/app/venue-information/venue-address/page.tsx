@@ -83,7 +83,7 @@ export default function VenueAddressPage() {
   });
   const router = useRouter();
 
-  // 处理首字母大写
+  // Capitalize the first letter
   const capitalizeFirstLetter = (str: string) => {
     return str
       .split(' ')
@@ -91,30 +91,30 @@ export default function VenueAddressPage() {
       .join(' ');
   };
 
-  // 动态加载 Google Maps 脚本
+  // Dynamically load Google Maps script
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // 检查是否已存在 Google Maps 脚本
+      // Check if the Google Maps script already exists
       const existingScript = document.querySelector('script[src^="https://maps.googleapis.com/maps/api/js"]');
       if (!existingScript && !window.google) {
         const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=OUR-GOOGLE-MAP-KEY-FIX-LATER&libraries=places`;
         script.async = true;
         script.onload = () => setMapsLoaded(true);
         document.body.appendChild(script);
       } else if (window.google) {
         setMapsLoaded(true);
       } else if (existingScript) {
-        // 如果脚本已存在但 window.google 还没 ready，监听 onload
+        // If the script exists but window.google is not ready, listen for onload
         existingScript.addEventListener('load', () => setMapsLoaded(true));
       }
     }
   }, []);
 
-  // 获取当前位置
+  // Get current location
   const handleUseCurrentLocation = () => {
     if (useCurrent) {
-      // 如果已经使用了当前位置，再次点击时清空所有字段
+      // If the current location has already been used, clear all fields when clicked again
       setUseCurrent(false);
       setAddress("");
       setFields({
@@ -135,16 +135,16 @@ export default function VenueAddressPage() {
         async (position) => {
           const { latitude, longitude } = position.coords;
           try {
-            // 使用 Google Maps Geocoding API 获取详细地址
+            // Use Google Maps Geocoding API to get detailed address
             const response = await fetch(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60`,
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=OUR-GOOGLE-MAP-KEY-FIX-LATER`,
             );
             const data: GeocodeResponse = await response.json();
             if (data.status === "OK" && data.results.length > 0) {
               const formattedAddress = data.results[0].formatted_address;
               setAddress(formattedAddress);
               
-              // 解析地址组件并填充表单
+              // Parse address components and fill the form
               const components = data.results[0].address_components;
               const get = (type: string) => {
                 const comp = components.find((c: AddressComponent) => c.types.includes(type));
@@ -176,7 +176,7 @@ export default function VenueAddressPage() {
 
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // 对输入值进行首字母大写处理
+    // Capitalize the first letter of the input value
     const capitalizedValue = capitalizeFirstLetter(value);
     setFields({ ...fields, [name]: capitalizedValue });
   };
@@ -194,7 +194,7 @@ export default function VenueAddressPage() {
           <ComponentCard title="Venue Address" className="w-full">
             <Form onSubmit={handleSubmit}>
               <div className="flex flex-col md:flex-row gap-10 items-stretch">
-                {/* 左侧表单区 */}
+                {/* Left form area */}
                 <div className="w-full md:w-1/2 flex flex-col justify-between flex-1">
                   <Label htmlFor="address">Venue Address:</Label>
                   <div className="relative w-full mb-2">
@@ -204,8 +204,8 @@ export default function VenueAddressPage() {
                         onChange={setAddress}
                         onSelect={(value: string) => {
                           setAddress(value);
-                          // 使用 Google Geocoding API 解析地址
-                          fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(value)}&key=AIzaSyDES-RSspkFObeLgRJtTcECNed63U-kM60`)
+                          // Use Google Geocoding API to parse the address
+                          fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(value)}&key=OUR-GOOGLE-MAP-KEY-FIX-LATER`)
                             .then(res => res.json())
                             .then((data: GeocodeResponse) => {
                               if (data.status === "OK" && data.results.length > 0) {
@@ -292,7 +292,7 @@ export default function VenueAddressPage() {
                   <div className="text-gray-500 text-sm mb-4">
                     If the address can&apos;t be found, enter it manually.
                   </div>
-                  {/* 手动输入表单 */}
+                  {/* Manual input form */}
                   <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="unitNumber">Unit Number (Optional)</Label>
@@ -363,7 +363,7 @@ export default function VenueAddressPage() {
                     />
                   </div>
                 </div>
-                {/* 右侧地图区 */}
+                {/* Right map area */}
                 <div className="w-full md:w-1/2 flex flex-col flex-1">
                   <div className="flex-1 overflow-hidden h-full min-h-[420px] mt-7">
                     <iframe
@@ -378,7 +378,7 @@ export default function VenueAddressPage() {
                   </div>
                 </div>
               </div>
-              {/* 按钮区 */}
+              {/* Button area */}
               <div className="flex justify-between mt-6">
                 <Button
                   variant="outline"

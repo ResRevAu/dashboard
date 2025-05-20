@@ -64,7 +64,7 @@ const menuItemsNavigation: NavItem[] = [
   },
 ];
 
-// 控制各部分显示的变量
+// Variables to control the display of each section
 const SHOW_CALENDAR = false;
 const SHOW_USER_PROFILE = false;
 const SHOW_TASK = false;
@@ -73,6 +73,12 @@ const SHOW_TABLES = false;
 const SHOW_PAGES = false;
 const SHOW_SUPPORT = false;
 const SHOW_OTHERS = false;
+// navItems only keeps Venue Information, others are controlled by variables
+// supportItems
+// othersItems
+// Combine all statistics into one top-level menu
+// Add Your Menu structure
+// Automatically open the corresponding submenu when the path changes
 
 // navItems 只保留 Venue Information，其他根据变量控制
 const navItems: NavItem[] = [
@@ -82,13 +88,13 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Register Venue Name", path: "/venue-information/register-venue-name" },
       { name: "Venue Address", path: "/venue-information/venue-address" },
-      { name: "Venue Type", path: "/venue-type" },
-      { name: "Cuisine Style", path: "/cuisine-style" },
-      { name: "Venue Photographs", path: "/venue-photographs" },
-      { name: "Add Your Logo", path: "/add-your-logo" },
-      { name: "Hours of Operation", path: "/hours-of-operation" },
-      { name: "Your Amenities", path: "/your-amenities" },
-      { name: "View Venue Profile", path: "/view-venue-profile" },
+      { name: "Venue Type", path: "/venue-information/venue-type" },
+      { name: "Cuisine Style", path: "/venue-information/cuisine-style" },
+      { name: "Venue Photographs", path: "/venue-information/venue-photographs" },
+      { name: "Add Your Logo", path: "/venue-information/add-your-logo" },
+      { name: "Hours of Operation", path: "/venue-information/hours-of-operation" },
+      { name: "Your Amenities", path: "/venue-information/your-amenities" },
+      { name: "View Venue Profile", path: "/venue-information/view-venue-profile" },
     ],
   },
   ...(SHOW_CALENDAR ? [{ icon: <CalenderIcon />, name: "Calendar", path: "/calendar" }] : []),
@@ -226,7 +232,7 @@ const customerSupportNavigation: NavItem[] = [
   },
 ];
 
-// 新增 Your Menu 结构
+// add Your Menu structure
 const yourMenuNavigation: NavItem[] = [
   {
     icon: <Image src="/images/icons/menu1.png" alt="Support" width={25} height={25} />,
@@ -269,7 +275,7 @@ const AppSidebar: React.FC = () => {
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
   useEffect(() => {
-    // 当路径改变时，自动打开对应的子菜单
+    // when the path changes, automatically open the corresponding submenu
     const findAndOpenSubmenu = () => {
       let found = false;
       const menuTypes = [

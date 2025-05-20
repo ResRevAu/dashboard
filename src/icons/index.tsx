@@ -54,11 +54,12 @@ import MoreDotIcon from "./MoreDotIcon.svg";
 import Chair from "./chair.png";
 import Food from "./food.png";
 import restaurant from "./restaurant.png";
-
+import CheckCircleIconSm from "./check-circle-sm.svg";
 export {
   Food,
   Chair,
   restaurant as Restaurant,
+  CheckCircleIconSm,
   DownloadIcon,
   FileIcon,
   GridIcon,
