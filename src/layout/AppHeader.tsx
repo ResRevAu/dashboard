@@ -89,7 +89,7 @@ const AppHeader: React.FC = () => {
               width={154}
               height={32}
               className="dark:hidden"
-              src="./images/logo/logo.svg"
+              src="/images/logo/RR-logo-title1-removebg-preview.png"
               alt="Logo"
             />
             <Image

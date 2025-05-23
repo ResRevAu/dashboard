@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   },
   transpilePackages: ['react-phone-input-2'],
   images: {
-    domains: ['flagcdn.com'],
+    domains: ['flagcdn.com','images.unsplash.com' ],
   },
 };
 

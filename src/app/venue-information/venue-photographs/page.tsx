@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import Form from "@/components/form/Form";
@@ -7,6 +7,7 @@ import Button from "@/components/ui/button/Button";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import ReactDOM from 'react-dom';
+import Image from 'next/image';
 
 // Define image/video type
 interface Photo {
@@ -58,10 +59,6 @@ function VenuePhotographsGallery() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
-  const imageRef = useRef<HTMLImageElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
-
   // Handle file upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const categoryName = selectedCategory === "all" 
@@ -87,7 +84,7 @@ function VenuePhotographsGallery() {
       'image/*': ['.jpeg', '.jpg', '.png'],
       'video/*': ['.mp4', '.mov']
     },
-    maxSize: 10 * 1024 * 1024 // 10MB
+    maxSize: 100 * 1024 * 1024 // 100MB
   });
 
   // Delete image/video
@@ -140,14 +137,14 @@ function VenuePhotographsGallery() {
         {/* Top upload area */}
         <div
           {...getRootProps()}
-          className={`flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-8 py-8 mb-2 transition-colors ${
+          className={`flex flex-col items-center justify-center gap-2 w-full p-4 rounded-2xl border-2 border-dashed px-8 py-8 mb-2 transition-colors ${
             isDragActive
               ? "border-blue-500 bg-blue-50"
               : "border-blue-400 bg-blue-50 hover:bg-blue-100"
           }`}
         >
           <input {...getInputProps()} />
-          <img src="/images/icons/upload.svg" alt="Upload" className="w-10 h-10 mb-2" />
+          <Image src="/images/icons/upload.svg" alt="Upload" width={40} height={40} className="mb-2" />
           <div className="flex flex-col items-center justify-center gap-1">
             <span className="text-sm text-gray-700 text-center">
               {isDragActive
@@ -171,10 +168,12 @@ function VenuePhotographsGallery() {
             <div key={photo.id} className="relative rounded-2xl border border-gray-200 bg-white shadow-sm p-4 flex flex-col items-center">
               {/* Image or video preview */}
               {photo.type === 'image' ? (
-                <img
+                <Image
                   className="h-32 w-full object-cover rounded-lg mb-3 cursor-pointer"
                   src={photo.url}
                   alt=""
+                  width={300}
+                  height={128}
                   onClick={() => openPreview(idx)}
                 />
               ) : (
@@ -232,10 +231,10 @@ function VenuePhotographsGallery() {
                 )}
                 <button 
                   onClick={() => handleDeletePhoto(photo.id)}
-                  className={`ml-2 text-gray-700 hover:text-red-500 transition-colors ${!photo.category ? 'ml-auto' : ''}`}
+                  className={`ml-2 text-gray-700 hover:text-blue-700 transition-colors ${!photo.category ? 'ml-auto' : ''}`}
                 >
                   <svg 
-                    className="w-3 h-3" 
+                    className="w-3.5 h-3.5" 
                     viewBox="0 0 1024 1024" 
                     version="1.1" 
                     xmlns="http://www.w3.org/2000/svg"
@@ -249,7 +248,7 @@ function VenuePhotographsGallery() {
         </div>
         {/* Fullscreen preview modal using Portal */}
         {typeof window !== 'undefined' && previewIndex !== null && ReactDOM.createPortal(
-          <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black bg-opacity-70">
+          <div className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/70 bg-opacity-70">
             <button
               className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 rounded-full p-2 text-white"
               onClick={showPrev}
@@ -320,7 +319,6 @@ function VenuePhotographsGallery() {
 
 export default function VenuePhotographsPage() {
   const router = useRouter();
-
   return (
     <div>
       <PageBreadcrumb pageTitle="Venue Photographs" />
@@ -330,8 +328,8 @@ export default function VenuePhotographsPage() {
             <Form onSubmit={() => {}}>
               <div className="mb-6">
                 <div className="text-sm text-gray-700 font-semibold mb-2">A picture tells a thousand words.</div>
-                <div className="text-sm text-gray-700 mb-2">
-                  This is where you add as many photos as you wish that will be displayed on your venue's online profile along with a short video (if you have one) that will best illustrate your venue to your customers.
+                <div className="text-sm text-gray-700 mb-4">
+                  You can update your venue&apos;s photos at any time. Your photos will be used on your venue&apos;s profile page, menu, search engines, maps and your marketing messages.
                 </div>
                 <div className="text-sm text-gray-500 italic">
                   *We suggest adding Exterior and Interior photos (you can update these at any time).

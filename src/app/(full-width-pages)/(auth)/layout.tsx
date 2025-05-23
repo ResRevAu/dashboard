@@ -24,7 +24,7 @@ export default function AuthLayout({
                   <Image
                     width={231}
                     height={48}
-                    src="./images/logo/auth-logo.svg"
+                    src="./images/logo/RR-logo-title1-removebg-preview.png"
                     alt="Logo"
                   />
                 </Link>

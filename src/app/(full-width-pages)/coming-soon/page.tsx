@@ -23,7 +23,7 @@ export default function ComingSoon() {
           <Link href="/" className="inline-block mb-6">
             <Image
               className="dark:hidden"
-              src="./images/logo/logo.svg"
+              src="./images/logo/RR-logo-title1-removebg-preview.png"
               alt="Logo"
               width={154}
               height={32}

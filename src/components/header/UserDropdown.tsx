@@ -7,6 +7,7 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -21,7 +22,13 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="flex items-center dropdown-toggle text-gray-700 dark:text-gray-400 dropdown-toggle"
       >
-        <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
+        <span
+          className="mr-3 overflow-hidden rounded-xl object-cover h-10 w-10 cursor-pointer"
+          onClick={e => {
+            e.stopPropagation();
+            setShowPreview(true);
+          }}
+        >
           <Image
             width={44}
             height={44}
@@ -30,7 +37,7 @@ export default function UserDropdown() {
           />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Richie’s
+        <span className="block mr-1 font-medium text-theme-sm">Richie&apos;s
         </span>
 
         <svg
@@ -60,7 +67,7 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Richie’s
+            Richie&apos;s
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
             richie@richies.com.au
@@ -92,7 +99,7 @@ export default function UserDropdown() {
               </svg>
 
              
-              Edit profile
+              Edit venue profile
             </DropdownItem>
           </li>
           <li>
@@ -168,6 +175,31 @@ export default function UserDropdown() {
           Sign out
         </Link>
       </Dropdown>
+
+      {/* 公司logo弹窗预览 */}
+      {showPreview && (
+        <div
+          className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-black/70"
+          onClick={() => setShowPreview(false)}
+        >
+          <div className="relative" onClick={e => e.stopPropagation()}>
+            <button
+              className="absolute top-2 right-2 text-white text-2xl z-10"
+              onClick={() => setShowPreview(false)}
+              title="Close"
+            >
+              &times;
+            </button>
+            <Image
+              src="/images/logo/restaurant-logo.png"
+              alt="User Avatar Preview"
+              width={300}
+              height={300}
+              className="max-w-[90vw] max-h-[80vh] rounded-2xl shadow-2xl bg-white"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
